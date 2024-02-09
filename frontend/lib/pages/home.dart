@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'dart:core';
 import 'dart:typed_data';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:learning/pages/base.dart';
@@ -17,33 +15,6 @@ class HomePage extends StatelessWidget {
       return file.readAsBytes();
     }
     return null;
-  }
-
-  Future<Map<String, double>> getPredictions(Uint8List imageData) async {
-    String base64Image = base64Encode(imageData);
-    Uri apiUrl = Uri.parse("http://127.0.0.1:8000/breed-prediction");
-
-    var response = await http.post(
-      apiUrl,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'image': base64Image,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> data = jsonDecode(response.body);
-      return Map<String, double>.from(data);
-    } else {
-      throw Exception('Failed to load predictions');
-    }
-  }
-
-  Map<String, double> filterPredictions(Map<String, double> predictions) {
-    predictions.removeWhere((k, v) => (v < 0.1));
-    return predictions;
   }
 
   @override
@@ -73,18 +44,13 @@ class HomePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Uint8List? image = await selectImage();
-              if (image != null) {
-                Map<String, double> result = await getPredictions(image);
-                Map<String, double> filteredResult = filterPredictions(result);
-                if (context.mounted) {
-                  Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context) => ResultPage(
-                      image: image,
-                      breeds: filteredResult
-                    )),
-                  );
-                }
+              if (image != null && context.mounted) {
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => ResultPage(
+                    image: image,
+                  )),
+                );
               }
             },
             child: Text(
