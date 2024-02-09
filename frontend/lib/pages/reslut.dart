@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:learning/pages/base.dart';
 
 class ResultPage extends StatelessWidget {
-  ResultPage({super.key, required this.image});
+  const ResultPage({super.key, required this.image, required this.breeds});
 
   final Uint8List image;
-  final List _breeds = [{"breed": "pomeranian", "percent": 50}, {"breed": "miniature pinscher", "percent": 50}];
+  final Map<String, double> breeds;
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class ResultPage extends StatelessWidget {
               style: Theme.of(context).textTheme.displayLarge,
             ),
           ),
-          for (var breed in _breeds)
+          for (var breed in breeds.entries)
             Padding(
               padding: const EdgeInsets.only(bottom: 15.0),
               child: DogBreed(
-                breedName: breed["breed"],
-                breedPercentage: breed["percent"],
+                breedName: breed.key,
+                breedPercentage: (breed.value * 100).toInt(),
               ),
             ),
           const SizedBox(height: 15,),

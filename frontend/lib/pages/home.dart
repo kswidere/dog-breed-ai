@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class HomePage extends StatelessWidget {
   Future<Map<String, double>> getPredictions(Uint8List imageData) async {
     String base64Image = base64Encode(imageData);
     Uri apiUrl = Uri.parse("http://127.0.0.1:8000/breed-prediction");
-    
+
     var response = await http.post(
       apiUrl,
       headers: <String, String>{
@@ -38,6 +39,11 @@ class HomePage extends StatelessWidget {
     } else {
       throw Exception('Failed to load predictions');
     }
+  }
+
+  Map<String, double> filterPredictions(Map<String, double> predictions) {
+    predictions.removeWhere((k, v) => (v < 0.1));
+    return predictions;
   }
 
   @override
@@ -67,14 +73,18 @@ class HomePage extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               Uint8List? image = await selectImage();
-              
               if (image != null) {
                 Map<String, double> result = await getPredictions(image);
-                print(result);
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(builder: (context) => ResultPage(image: image,)),
-                );
+                Map<String, double> filteredResult = filterPredictions(result);
+                if (context.mounted) {
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(builder: (context) => ResultPage(
+                      image: image,
+                      breeds: filteredResult
+                    )),
+                  );
+                }
               }
             },
             child: Text(
