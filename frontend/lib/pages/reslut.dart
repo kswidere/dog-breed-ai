@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:learning/pages/base.dart';
@@ -73,38 +74,41 @@ class _ResultPageState extends State<ResultPage> {
   Widget build(BuildContext context) {
     return _isLoading 
       ? const LoadingPage()
-      : ImageWithCard(
-        image: widget.image,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Text(
-                "Your dog is...",
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-            ),
-            for (var breed in _breeds.entries)
+      : Animate(
+        effects: [SlideEffect(begin: Offset(0.5, 0), duration: 200.ms)],
+        child: ImageWithCard(
+          image: widget.image,
+          child: Column(
+            children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 15.0),
-                child: DogBreed(
-                  breedName: breed.key,
-                  breedPercentage: (breed.value * 100).toInt(),
+                padding: const EdgeInsets.all(30.0),
+                child: Text(
+                  "Your dog is...",
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
               ),
-            const SizedBox(height: 15,),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Back to home page",
-                style: Theme.of(context).textTheme.labelMedium,
+              for (var breed in _breeds.entries)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: DogBreed(
+                    breedName: breed.key,
+                    breedPercentage: (breed.value * 100).toInt(),
+                  ),
+                ),
+              const SizedBox(height: 15,),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Back to home page",
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
               ),
-            ),
-            const SizedBox(height: 30,),
-          ],
-        )
+              const SizedBox(height: 30,),
+            ],
+          )
+        ),
       );
   }
   
@@ -130,7 +134,6 @@ class _ResultPageState extends State<ResultPage> {
       }
     );
   }
-
 }
 
 class DogBreed extends StatelessWidget {
