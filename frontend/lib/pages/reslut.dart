@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:learning/pages/base.dart';
+import 'package:learning/pages/home.dart';
 import 'package:learning/pages/loading.dart';
 
 class ResultPage extends StatefulWidget {
@@ -21,34 +23,43 @@ class _ResultPageState extends State<ResultPage> {
   void getPredictions(Uint8List imageData) async {
     String base64Image = base64Encode(imageData);
     Uri apiUrl = Uri.parse("http://127.0.0.1:8000/breed-prediction");
+    http.Response? response;
 
-    var response = await http.post(
-      apiUrl,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'image': base64Image,
-      }),
-    );
+    try {
+      response = await http.post(
+        apiUrl,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'image': base64Image,
+        }),
+      );
+    } on SocketException {
+      if (context.mounted) {
+        showErrorDialog(context, "Encountered an error with our server. Try again later!");
+      }
+    }
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (response.statusCode == 200) {
+    if (response != null && response.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(response.body);
-      Map<String, double> filteredPredictions = filterPredictions(Map<String, double>.from(data));
+      Map<String, double> filteredData = filterPredictions(Map<String, double>.from(data));
       setState(() {
-        _breeds = filteredPredictions;
+        _breeds = filteredData;
+        _isLoading = false;
       });
-    } else {
-      throw Exception('Failed to load predictions');
+    } else if (response != null && context.mounted) {
+      showErrorDialog(context, "Picture's format unsupported. Try a different picture!");
     }
   }
 
   Map<String, double> filterPredictions(Map<String, double> predictions) {
     predictions.removeWhere((k, v) => (v < 0.1));
+    final sorted = predictions.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    predictions = {for (var entry in sorted) entry.key: entry.value};
+    if (predictions.isEmpty) {
+      predictions = {"Unique": 1};
+    }
     return predictions;
   }
 
@@ -93,10 +104,33 @@ class _ResultPageState extends State<ResultPage> {
             ),
             const SizedBox(height: 30,),
           ],
-          
         )
       );
   }
+  
+  void showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Center(child: Text("Oops...", style: Theme.of(context).textTheme.displayLarge)),
+          content: Text(message, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center,),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text("Back to home page", style: Theme.of(context).textTheme.labelMedium),
+              onPressed: () { Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              ); },
+            ),
+          ],
+        );
+      }
+    );
+  }
+
 }
 
 class DogBreed extends StatelessWidget {
