@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:learning/pages/base.dart';
-import 'package:learning/pages/home.dart';
-import 'package:learning/pages/loading.dart';
+import 'package:pawspective/pages/base.dart';
+import 'package:pawspective/pages/home.dart';
+import 'package:pawspective/pages/loading.dart';
 
 class ResultPage extends StatefulWidget {
   const ResultPage({super.key, required this.image});
@@ -75,7 +75,7 @@ class _ResultPageState extends State<ResultPage> {
     return _isLoading 
       ? const LoadingPage()
       : Animate(
-        effects: [SlideEffect(begin: Offset(0.5, 0), duration: 200.ms)],
+        effects: [SlideEffect(begin: const Offset(1, 0), duration: 150.ms)],
         child: ImageWithCard(
           image: widget.image,
           child: Column(

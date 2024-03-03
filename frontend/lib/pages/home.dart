@@ -2,8 +2,8 @@ import 'dart:core';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:learning/pages/base.dart';
-import 'package:learning/pages/reslut.dart';
+import 'package:pawspective/pages/base.dart';
+import 'package:pawspective/pages/reslut.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

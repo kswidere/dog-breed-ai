@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:learning/pages/home.dart';
+import 'package:pawspective/pages/home.dart';
 
 void main() {
   runApp(const App());
