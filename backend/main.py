@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-from models import ImageData
 from utils import model_predict
+from pydantic import BaseModel
 
 model = {}
+
+
+class ImageData(BaseModel):
+    image: str
 
 
 @asynccontextmanager
