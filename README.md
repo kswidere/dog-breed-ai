@@ -2,7 +2,7 @@
 This app uses artificial intelligence to predict any dog's breed from picture.
 
 <p align="center">
-<img height="400" alt="app demo" src="app_demo.gif" />
+<img alt="app demo" src="app_demo.gif" />
 </p>
 
 The frontend is written in Flutter and it sends RESTful API calls to the backend, written with Python's FastAPI.
@@ -18,11 +18,13 @@ Accuracy measured on a testing dataset is ~95%.
 1. Activate the virtual environment
 
         $ cd backend
-        $ costam
+        $ python3 -m venv venv
+        $ source venv/bin/activate
+        $ pip install -r requirements.txt
 
 2. Run the server
 
-        $ uvicorn main:app --reload
+        $ uvicorn main:app
 
 3. Start mobile simulator and run command
 
